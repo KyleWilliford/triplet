@@ -74,7 +74,7 @@ public class TicTacToe extends BasicGame {
     public static void main(String[] args) {
         try {
             AppGameContainer appgc = new AppGameContainer(new TicTacToe("TripleT"));
-            appgc.setDisplayMode(1024, 768, false);
+            appgc.setDisplayMode(640, 480, false);
             appgc.start();
         } catch (SlickException e) {
             e.printStackTrace();
