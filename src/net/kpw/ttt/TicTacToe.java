@@ -152,7 +152,11 @@ public class TicTacToe extends BasicGame {
             }
         }
         if (gameOver) {
-            g.drawString("\nGame over! Winner: " + winner, 10, 10);
+            if (winner == Mark.NONE) {
+                g.drawString("\nGame over! Tie game.", 10, 10);
+            } else {
+                g.drawString("\nGame over! Winner: " + winner, 10, 10);
+            }
             g.drawString("Restart game? (y/n)", 100, 10);
         }
     }
@@ -163,6 +167,8 @@ public class TicTacToe extends BasicGame {
 
     private boolean checkGameOver() {
 
+        short openSpaces = 0;
+
         for (int i = 0; i < board.length; i++) {
             // check rows
             Mark current = null;
@@ -171,6 +177,8 @@ public class TicTacToe extends BasicGame {
                 TicTacToeRectangle r = board[j][i];
                 if (r.isOccupied()) {
                     System.out.println("Piece at position " + j + "," + i + " is marked with a " + r.getMark());
+                } else {
+                    ++openSpaces;
                 }
                 if (current == null || previous == null) {
                     // look at next element
@@ -186,6 +194,7 @@ public class TicTacToe extends BasicGame {
                     }
                 }
             }
+
             if (current == previous && current != Mark.NONE && current != null) {
                 System.out.println("Winner: " + current);
                 gameOver = true;
@@ -211,6 +220,7 @@ public class TicTacToe extends BasicGame {
                     }
                 }
             }
+
             if (current == previous && current != Mark.NONE && current != null) {
                 System.out.println("Winner: " + current);
                 gameOver = true;
@@ -231,6 +241,13 @@ public class TicTacToe extends BasicGame {
                     winner = board[1][1].getMark();
                 }
             }
+        }
+
+        // tied game
+        System.out.println("Open spaces: " + openSpaces);
+        if (openSpaces == 0) {
+            gameOver = true;
+            winner = Mark.NONE;
         }
         return false;
     }
