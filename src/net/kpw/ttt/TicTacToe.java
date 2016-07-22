@@ -14,6 +14,8 @@ import org.newdawn.slick.geom.Vector2f;
  */
 public class TicTacToe extends BasicGame {
 
+    private static AppGameContainer appgc;
+
     /**
      * Game over flag.
      */
@@ -73,7 +75,7 @@ public class TicTacToe extends BasicGame {
      */
     public static void main(String[] args) {
         try {
-            AppGameContainer appgc = new AppGameContainer(new TicTacToe("TripleT"));
+            appgc = new AppGameContainer(new TicTacToe("TripleT"));
             appgc.setDisplayMode(640, 480, false);
             appgc.start();
         } catch (SlickException e) {
@@ -96,6 +98,23 @@ public class TicTacToe extends BasicGame {
                     ypos += width;
                 }
                 xpos += height;
+            }
+        }
+    }
+
+    @Override
+    public void keyReleased(int key, char c) {
+        if (gameOver) {
+            if (c == 'y') {
+                gameOver = false;
+                winner = Mark.NONE;
+                try {
+                    appgc.reinit();
+                } catch (SlickException e) {
+                    e.printStackTrace();
+                }
+            } else if (c == 'n') {
+                appgc.exit();
             }
         }
     }
