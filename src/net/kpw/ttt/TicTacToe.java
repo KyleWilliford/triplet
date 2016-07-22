@@ -16,6 +16,8 @@ public class TicTacToe extends BasicGame {
 
     private static AppGameContainer appgc;
 
+    private Scoreboard scoreboard = new Scoreboard();
+
     /**
      * Game over flag.
      */
@@ -77,6 +79,7 @@ public class TicTacToe extends BasicGame {
         try {
             appgc = new AppGameContainer(new TicTacToe("TripleT"));
             appgc.setDisplayMode(640, 480, false);
+            appgc.setShowFPS(false);
             appgc.start();
         } catch (SlickException e) {
             e.printStackTrace();
@@ -103,6 +106,24 @@ public class TicTacToe extends BasicGame {
     }
 
     @Override
+    public void keyPressed(int key, char c) {
+        if (c == 'q') {
+            appgc.exit();
+        } else if (c == 'r') {
+            try {
+                if (gameOver) {
+                    gameOver = false;
+                    winner = Mark.NONE;
+                }
+                appgc.reinit();
+            } catch (SlickException e) {
+                e.printStackTrace();
+                appgc.exit();
+            }
+        }
+    }
+
+    @Override
     public void keyReleased(int key, char c) {
         if (gameOver) {
             if (c == 'y') {
@@ -112,6 +133,7 @@ public class TicTacToe extends BasicGame {
                     appgc.reinit();
                 } catch (SlickException e) {
                     e.printStackTrace();
+                    appgc.exit();
                 }
             } else if (c == 'n') {
                 appgc.exit();
@@ -123,7 +145,7 @@ public class TicTacToe extends BasicGame {
     public void mousePressed(int button, int x, int y) {
         System.out.println("button " + button + " at " + x + "," + y);
         if (button == 0 && !gameOver) {
-            for (int i = 0; i < board.length; i++) {
+            outerloop: for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board.length; j++) {
                     if (board[i][j].contains(x, y)) {
                         System.out.println("clicked rectangle at pos " + i + ", " + j);
@@ -135,13 +157,14 @@ public class TicTacToe extends BasicGame {
                                 board[i][j].occupy(Mark.CROSS);
                                 nextMark = Mark.CIRCLE;
                             }
+                            checkGameOver();
+                            break outerloop;
                         } catch (IllegalMoveException e) {
                             System.out.println("Illegal move");
                         }
                     }
                 }
             }
-            checkGameOver();
         }
     }
 
@@ -171,12 +194,9 @@ public class TicTacToe extends BasicGame {
             }
         }
         if (gameOver) {
-            if (winner == Mark.NONE) {
-                g.drawString("\nGame over! Tie game.", 10, 10);
-            } else {
-                g.drawString("\nGame over! Winner: " + winner, 10, 10);
-            }
-            g.drawString("Restart game? (y/n)", 100, 10);
+            renderGameResults(g);
+        } else {
+            g.drawString("q to quit, r to restart", 10, 10);
         }
     }
 
@@ -268,6 +288,32 @@ public class TicTacToe extends BasicGame {
             gameOver = true;
             winner = Mark.NONE;
         }
-        return false;
+
+        if (winner == Mark.CIRCLE) {
+            scoreboard.incrementCircleScore();
+        } else if (winner == Mark.CROSS) {
+            scoreboard.incrementCrossScore();
+        }
+        return gameOver;
+    }
+
+    /**
+     * Render the results of a game after a round completes.
+     *
+     * @param g
+     *            {@link Graphics}
+     */
+    private void renderGameResults(Graphics g) {
+
+        if (winner == Mark.NONE) {
+            g.drawString(
+                    "Game over! Tie game. O: " + scoreboard.getCircleScore() + " X: " + scoreboard.getCrossScore(), 10,
+                    10);
+        } else {
+            g.drawString(
+                    "Game over! Winner: " + winner + " O: " + scoreboard.getCircleScore() + " X: "
+                            + scoreboard.getCrossScore(), 10, 10);
+        }
+        g.drawString("Restart game? (y/n)", 10, 28);
     }
 }
