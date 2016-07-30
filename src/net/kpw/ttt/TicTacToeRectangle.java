@@ -2,6 +2,10 @@ package net.kpw.ttt;
 
 import org.newdawn.slick.geom.Rectangle;
 
+/**
+ * An extension of the Slick2d {@link Rectangle} class, with added abilities for
+ * tracking user marking data.
+ */
 public class TicTacToeRectangle extends Rectangle {
 
     /**

@@ -15,6 +15,7 @@ import org.newdawn.slick.geom.Vector2f;
 public class TicTacToe extends BasicGame {
 
     private static AppGameContainer appgc;
+    private static ComputerOpponent co;
 
     private Scoreboard scoreboard = new Scoreboard();
 
@@ -51,7 +52,7 @@ public class TicTacToe extends BasicGame {
     /**
      * The mark for the next player selection.
      */
-    private Mark nextMark = Mark.CIRCLE;
+    private Mark playerMark = Mark.CIRCLE;
 
     /**
      * The game board matrix.
@@ -80,6 +81,7 @@ public class TicTacToe extends BasicGame {
             appgc = new AppGameContainer(new TicTacToe("TripleT"));
             appgc.setDisplayMode(640, 480, false);
             appgc.setShowFPS(false);
+            co = new ComputerOpponent(Mark.CROSS);
             appgc.start();
         } catch (SlickException e) {
             e.printStackTrace();
@@ -116,6 +118,7 @@ public class TicTacToe extends BasicGame {
                     winner = Mark.NONE;
                 }
                 appgc.reinit();
+                co = new ComputerOpponent(Mark.CROSS);
             } catch (SlickException e) {
                 e.printStackTrace();
                 appgc.exit();
@@ -131,6 +134,7 @@ public class TicTacToe extends BasicGame {
                 winner = Mark.NONE;
                 try {
                     appgc.reinit();
+                    co = new ComputerOpponent(Mark.CROSS);
                 } catch (SlickException e) {
                     e.printStackTrace();
                     appgc.exit();
@@ -150,14 +154,13 @@ public class TicTacToe extends BasicGame {
                     if (board[i][j].contains(x, y)) {
                         System.out.println("clicked rectangle at pos " + i + ", " + j);
                         try {
-                            if (nextMark == Mark.CIRCLE) {
-                                board[i][j].occupy(Mark.CIRCLE);
-                                nextMark = Mark.CROSS;
-                            } else {
-                                board[i][j].occupy(Mark.CROSS);
-                                nextMark = Mark.CIRCLE;
-                            }
+                            board[i][j].occupy(Mark.CIRCLE);
                             checkGameOver();
+                            // Computer Opponent turn
+                            if (!gameOver) {
+                                co.move(board);
+                                checkGameOver();
+                            }
                             break outerloop;
                         } catch (IllegalMoveException e) {
                             System.out.println("Illegal move");
@@ -204,6 +207,13 @@ public class TicTacToe extends BasicGame {
     public void update(GameContainer arg0, int arg1) throws SlickException {
     }
 
+    /**
+     * Check if the game should be concluded based on standard rules for a
+     * single 3x3 board.
+     *
+     * @return
+     */
+    // TODO refactor
     private boolean checkGameOver() {
 
         short openSpaces = 0;
