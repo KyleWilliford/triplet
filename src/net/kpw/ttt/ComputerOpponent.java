@@ -144,15 +144,19 @@ public class ComputerOpponent {
         strategies.add(strategy);
 
         /*
-         * Reverse the coordinates for all strategies, and add each list of reversed coordinates as a new strategy
+         * Reverse the order of coordinates for all strategies, and add each list of reversed coordinates as a new strategy. 
+         * Ex. strategy 3c is still the same coordinates as 3c, but the first pair of coordnates will be places in the reverse list as 
+         * the third pair of coordinates.
          */
         List<LinkedList<IntPair>> reverseStrategies = new LinkedList<LinkedList<IntPair>>();
-        for (LinkedList<IntPair> reverseStrat : strategies) {
+        for (LinkedList<IntPair> normStrat : strategies) {
             strategy = new LinkedList<IntPair>();
-            for (IntPair pair : reverseStrat) {
-                ip = new IntPair(pair.getY(), pair.getX());
-                strategy.add(ip);
-            }
+            IntPair first = normStrat.get(normStrat.size() - 1);
+            IntPair middle = normStrat.get(normStrat.size() / 2);
+            IntPair last = normStrat.get(0);
+            strategy.add(first);
+            strategy.add(middle);
+            strategy.add(last);
             reverseStrategies.add(strategy);
         }
         strategies.addAll(reverseStrategies);
