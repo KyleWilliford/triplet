@@ -58,6 +58,10 @@ public class ComputerOpponent {
         // return chosenStrategies.get(index);
     }
 
+    /**
+     * Basic strategies for AI opponent. These are a set of coordinates listed
+     * for the AI to determine if one or more are valid strategies.
+     */
     private void initStrategies() {
         // strategy1r = 1st row
         LinkedList<IntPair> strategy = new LinkedList<IntPair>();
@@ -138,5 +142,19 @@ public class ComputerOpponent {
         ip = new IntPair(0, 2);
         strategy.add(ip);
         strategies.add(strategy);
+
+        /*
+         * Reverse the coordinates for all strategies, and add each list of reversed coordinates as a new strategy
+         */
+        List<LinkedList<IntPair>> reverseStrategies = new LinkedList<LinkedList<IntPair>>();
+        for (LinkedList<IntPair> reverseStrat : strategies) {
+            strategy = new LinkedList<IntPair>();
+            for (IntPair pair : reverseStrat) {
+                ip = new IntPair(pair.getY(), pair.getX());
+                strategy.add(ip);
+            }
+            reverseStrategies.add(strategy);
+        }
+        strategies.addAll(reverseStrategies);
     }
 }
