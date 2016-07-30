@@ -25,6 +25,11 @@ public class TicTacToe extends BasicGame {
     private boolean gameOver = false;
 
     /**
+     * Number of open spaces on the game board.
+     */
+    private int openSpaces = 0;
+
+    /**
      * Winner of the current game.
      */
     private Mark winner = Mark.NONE;
@@ -48,11 +53,6 @@ public class TicTacToe extends BasicGame {
      * The height of each game tile.
      */
     float height = 100F;
-
-    /**
-     * The mark for the next player selection.
-     */
-    private Mark playerMark = Mark.CIRCLE;
 
     /**
      * The game board matrix.
@@ -117,8 +117,8 @@ public class TicTacToe extends BasicGame {
                     gameOver = false;
                     winner = Mark.NONE;
                 }
-                appgc.reinit();
                 co = new ComputerOpponent(Mark.CROSS);
+                appgc.reinit();
             } catch (SlickException e) {
                 e.printStackTrace();
                 appgc.exit();
@@ -133,8 +133,8 @@ public class TicTacToe extends BasicGame {
                 gameOver = false;
                 winner = Mark.NONE;
                 try {
-                    appgc.reinit();
                     co = new ComputerOpponent(Mark.CROSS);
+                    appgc.reinit();
                 } catch (SlickException e) {
                     e.printStackTrace();
                     appgc.exit();
@@ -157,10 +157,7 @@ public class TicTacToe extends BasicGame {
                             board[i][j].occupy(Mark.CIRCLE);
                             checkGameOver();
                             // Computer Opponent turn
-                            if (!gameOver) {
-                                co.move(board);
-                                checkGameOver();
-                            }
+                            aiMove();
                             break outerloop;
                         } catch (IllegalMoveException e) {
                             System.out.println("Illegal move");
@@ -168,6 +165,13 @@ public class TicTacToe extends BasicGame {
                     }
                 }
             }
+        }
+    }
+
+    private void aiMove() {
+        if (!gameOver) {
+            co.move(board, openSpaces);
+            checkGameOver();
         }
     }
 
@@ -216,7 +220,7 @@ public class TicTacToe extends BasicGame {
     // TODO refactor
     private boolean checkGameOver() {
 
-        short openSpaces = 0;
+        openSpaces = 0;
 
         for (int i = 0; i < board.length; i++) {
             // check rows

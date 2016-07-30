@@ -1,6 +1,5 @@
 package net.kpw.ttt;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,10 +18,9 @@ public class ComputerOpponent {
         initStrategies();
     }
 
-    public void move(TicTacToeRectangle[][] board) {
-        List<IntPair> strategy = chooseStrategy(board);
+    public void move(TicTacToeRectangle[][] board, int openSpaces) {
+        List<IntPair> strategy = chooseStrategy(board, openSpaces);
         outer: for (IntPair pair : strategy) {
-            System.out.println("Strategy: " + pair.getX() + "," + pair.getY());
             TicTacToeRectangle rectangle = board[pair.getX()][pair.getY()];
             if (!rectangle.isOccupied()) {
                 try {
@@ -35,27 +33,31 @@ public class ComputerOpponent {
         }
     }
 
-    private List<IntPair> chooseStrategy(TicTacToeRectangle[][] board) {
-        int counter = 1;
-        // List<LinkedList<IntPair>> chosenStrategies = new
-        // ArrayList<LinkedList<IntPair>>();
-        Iterator<LinkedList<IntPair>> stratIter = strategies.iterator();
-        while (stratIter.hasNext()) {
-            LinkedList<IntPair> strategy = stratIter.next();
-            nextStrategy: for (IntPair pair : strategy) {
+    private List<IntPair> chooseStrategy(TicTacToeRectangle[][] board, int openSpaces) {
+
+        List<LinkedList<IntPair>> validStrategies = new LinkedList<LinkedList<IntPair>>();
+        for (LinkedList<IntPair> strategy : strategies) {
+            int playerMarkCounter = 0;
+            int aiMarkCounter = 0;
+            for (IntPair pair : strategy) {
                 TicTacToeRectangle rectangle = board[pair.getX()][pair.getY()];
                 if (rectangle.getMark() == Mark.CIRCLE) {
-                    System.out.println("strategy" + counter + " invalid");
-                    stratIter.remove();
-                    break nextStrategy;
+                    ++playerMarkCounter;
                 }
-                // chosenStrategies.add(strategy);
+                if (rectangle.getMark() == Mark.CROSS) {
+                    ++aiMarkCounter;
+                }
             }
-            counter++;
+            if (playerMarkCounter == 2 && aiMarkCounter == 0) {
+                System.out.println("BLOCKING STRATEGY");
+                return strategy;
+            }
+            if (playerMarkCounter == 0 || openSpaces < 3) {
+                validStrategies.add(strategy);
+            }
         }
-        int index = (int) (Math.random() * strategies.size());
-        return strategies.get(index);
-        // return chosenStrategies.get(index);
+        int index = (int) (Math.random() * validStrategies.size());
+        return validStrategies.get(index);
     }
 
     /**
